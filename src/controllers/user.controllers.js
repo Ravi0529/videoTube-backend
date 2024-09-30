@@ -35,6 +35,7 @@ const registerUser = asyncHandler(async (req, res) => {
         if (!avatar) {
             throw new ApiError(500, "Failed to upload avatar");
         }
+        console.log("Uploaded avatar: ", avatar)
         console.log("Uploaded avatar", avatar);
     } catch (error) {
         console.error("Error uploading avatar:", error);

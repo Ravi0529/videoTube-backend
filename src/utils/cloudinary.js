@@ -11,24 +11,45 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
+// const uploadOnCloudinary = async (localFilePath) => {
+//     try {
+//         if (!localFilePath) return null
+//         const response = await cloudinary.uploader.upload(
+//             localFilePath, {
+//             resource_type: "auto"
+//         }
+//         )
+//         console.log("File uploaded on cloudinary. File src: " + response.url)
+
+//         // once a file is uploaded, we vwould like to delete it from our server
+//         fs.unlinkSync(localFilePath)
+//         return response
+//     } catch (error) {
+//         fs.unlinkSync(localFilePath)
+//         return null
+//     }
+// }
+
 const uploadOnCloudinary = async (localFilePath) => {
     try {
-        if (!localFilePath) return null
-        const response = await cloudinary.uploader.upload(
-            localFilePath, {
-            resource_type: "auto"
-        }
-        )
-        console.log("File uploaded on cloudinary. File src: " + response.url)
+        if (!localFilePath) return null;
 
-        // once a file is uploaded, we vwould like to delete it from our server
-        fs.unlinkSync(localFilePath)
-        return response
+        const response = await cloudinary.uploader.upload(
+            localFilePath, { resource_type: "auto" }
+        );
+        console.log("File uploaded to Cloudinary. File src:", response.url);
+
+        // Delete the file from the server once uploaded
+        fs.unlinkSync(localFilePath);
+        return response;
     } catch (error) {
-        fs.unlinkSync(localFilePath)
-        return null
+        console.error("Error uploading to Cloudinary:", error);  // Log the error details
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);  // Ensure file is deleted even on failure
+        }
+        throw new Error("Cloudinary upload failed");  // Pass the error back to the controller
     }
-}
+};
 
 const deleteFromCloudinary = async (publicId) => {
     try {
